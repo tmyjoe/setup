@@ -1,0 +1,77 @@
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  sudo: no
+  vars:
+    homebrew_tap_repository:
+      - caskroom/cask
+      - homebrew/binary
+      - homebrew/dupes
+    homebrew_packages:
+      - { name: readline }
+      - { name: openssl }
+      - { name: openssl, state: linked, install_options: force }
+      - { name: ansible }
+      - { name: git }
+      - { name: zsh, install_options: disable-etcdir }
+      - { name: neovim }
+      - { name: wget }
+      - { name: curl }
+      - { name: cmake }
+      - { name: autoconf }
+      - { name: automake }
+      - { name: pkg-config }
+      - { name: ctags }
+      - { name: tree }
+      - { name: lv }
+      - { name: nkf }
+      - { name: jq }
+      - { name: rbenv }
+      - { name: pyenv }
+      - { name: nodeenv }
+      - { name: pwgen}
+      - { name: watch}
+      - { name: awscli }
+    homebrew_cask_packages:
+      - { name: firefox }
+      - { name: google-chrome }
+      - { name: skitch }
+      - { name: karabiner }
+      - { name: skype }
+      - { name: slack }
+      - { name: intellij-idea }
+      - { name: virtualbox }
+
+  tasks:
+    - name: add homebrew tap repository
+      homebrew_tap: name={{ item }}
+      with_items: "{{ homebrew_tap_repository }}"
+    - name: update homebrew
+      homebrew: update_homebrew=yes
+
+    # homebrew
+    - name: install homebrew package
+      homebrew: >
+        name={{ item.name }}
+        state={{ item.state | default('latest') }}
+        install_options={{
+          item.install_options | default() | join(',')
+          if item.install_options is not string
+          else item.install_options
+        }}
+      with_items: "{{ homebrew_packages }}"
+
+    # homebrew-cask
+    - name: install homebrew-cask
+      homebrew: name=cask state=latest
+    - name: install homebrew-cask package
+      homebrew_cask: name={{ item.name }} state={{ item.state|default('installed') }}
+      with_items: "{{ homebrew_cask_packages }}"
+
+    # prezto
+    - name: install prezto
+      git: repo=https://github.com/sorin-ionescu/prezto.git dest=~/.zprezto
+
+  handlers:
+    - name: run fc-cache
+      shell: fc-cache -vf
