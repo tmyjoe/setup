@@ -5,8 +5,6 @@
   vars:
     homebrew_tap_repository:
       - caskroom/cask
-      - homebrew/binary
-      - homebrew/dupes
     homebrew_packages:
       - { name: readline }
       - { name: openssl }
@@ -39,8 +37,6 @@
       - { name: karabiner }
       - { name: skype }
       - { name: slack }
-      - { name: intellij-idea }
-      - { name: virtualbox }
 
   tasks:
     - name: add homebrew tap repository
