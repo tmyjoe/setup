@@ -33,7 +33,7 @@ echo 'run ansible?[Y/n]'
 read ANSWER
 case $ANSWER in
   "" | "Y" | "y" )
-    cd ~/dotfile
+    cd ~/dotfiles
     HOMEBREW_CASK_OPTS="--appdir=/Applications" ansible-playbook -i hosts -vv localhost.yaml;;
   * ) echo "run ansible skip";;
 esac
